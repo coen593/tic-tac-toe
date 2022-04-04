@@ -1,3 +1,10 @@
+@import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat&family=Poiret+One&display=swap');
+
+:root {
+    --gameboard-size: 500px;
+    font-family: 'Poiret One', sans-serif;
+}
+
 .container {
     display: flex;
     justify-content: center;
@@ -6,7 +13,32 @@
 }
 
 .gameboard {
-    width: 500px;
-    height: 500px;
-    border: 1px solid lightblue
+    width: var(--gameboard-size);
+    height: var(--gameboard-size);
+    border: 1px solid lightblue;
+    display: grid;
+    padding: 20px;
+    grid-template-columns: repeat(3, calc(var(--gameboard-size) / 3));
+    grid-template-rows: repeat(3, calc(var(--gameboard-size) / 3));
+}
+
+.cell {
+    border: 5px solid black;
+    border-left: none;
+    border-top: none;
+    font-size: 100px;
+    font-family: 'Montserrat';
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.cell[data-index="2"],
+.cell[data-index="5"],
+.cell[data-index="8"] {
+    border-right: none;
+}
+.cell[data-index="6"],
+.cell[data-index="7"],
+.cell[data-index="8"] {
+    border-bottom: none;
 }
