@@ -1,6 +1,6 @@
 // Module function to define gameBoard
 const gameBoard = (() => {
-    const board = []
+    let board = []
     let cell
     const getContainer = () => document.querySelector('.gameboard')
     const createGrid = () => {
@@ -11,7 +11,7 @@ const gameBoard = (() => {
             div.classList.add('cell')
             container.appendChild(div)
             div.addEventListener('click', function() {
-                if (this.innerText || game.gameOver) {return}
+                if (this.innerText || game.checkWin()) {return}
                 cell = this.dataset.index
                 game.playMove(this.dataset.index)
             })
@@ -22,6 +22,7 @@ const gameBoard = (() => {
         for (let i = 0; i < divs.length; i++) {
             divs[i].remove()
             i--
+            board.length = 0
         }
         createGrid()
     }
@@ -30,7 +31,7 @@ const gameBoard = (() => {
         let div = document.querySelector(`.cell[data-index="${cell}"]`)
         div.innerText = active
     }
-    return { createGrid, setCell, board }
+    return { createGrid, setCell, resetGrid, board }
 })();
 
 const game = (() => {
@@ -40,14 +41,13 @@ const game = (() => {
     const x = Player('X')
     const o = Player('O')
     let active = x
-    let gameOver
+    let gameOver = false
 
     const playMove = () => {
         gameBoard.setCell(active.symbol)
         if (checkWin()) {
             isGameOver(active.symbol)
-        }
-        console.log(gameOver)
+        } 
         active === x ? active = o : active = x
     }
 
@@ -76,12 +76,21 @@ const game = (() => {
     const isGameOver = (winner) => {
         const modal = document.querySelector('.winner')
         const wonText = document.querySelector('.won')
+        const playAgainButton = document.querySelector('#play-again')
         wonText.innerText = `${winner} won!`
         modal.classList.add('active')
         gameOver = true
+        playAgainButton.addEventListener('click', () => playAgain(modal))
     }
 
-    return { playMove, gameOver }
+    const playAgain = (modal) => {
+        gameOver = false
+        active = x
+        modal.classList.remove('active')
+        gameBoard.resetGrid()
+    }
+
+    return { playMove, checkWin }
 })()
 
 gameBoard.createGrid()
