@@ -45,14 +45,13 @@ const game = (() => {
 
     const playMove = () => {
         gameBoard.setCell(active.symbol)
-        if (checkWin()) {
-            isGameOver(active.symbol)
-        } 
+        if (checkWin()) {isGameOver(active.symbol)} 
+        if (checkTie()) {isGameOver()} 
         active === x ? active = o : active = x
     }
 
     const checkWin = () => {
-        let board = gameBoard.board
+        const board = gameBoard.board
         const winConditions = [
             [0,1,2],
             [3,4,5],
@@ -73,6 +72,8 @@ const game = (() => {
         return false
     }
 
+    const checkTie = () => gameBoard.board.length === 9 && !gameBoard.board.includes(undefined)
+
     const isGameOver = (winner) => {
         const modal = document.querySelector('.winner')
         const wonText = document.querySelector('.won')
@@ -81,6 +82,7 @@ const game = (() => {
         modal.classList.add('active')
         gameOver = true
         playAgainButton.addEventListener('click', () => playAgain(modal))
+        winner ? wonText.innerText = `${winner} won!` : wonText.innerText = "It's a tie!"
     }
 
     const playAgain = (modal) => {
