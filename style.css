@@ -2,6 +2,7 @@
 
 :root {
     --gameboard-size: 500px;
+    --bright-blue: rgb(0, 195, 255);
     font-family: 'Poiret One', sans-serif;
 }
 
@@ -16,6 +17,7 @@
     width: var(--gameboard-size);
     height: var(--gameboard-size);
     border: 1px solid lightblue;
+    border-radius: 20px;
     display: grid;
     padding: 20px;
     grid-template-columns: repeat(3, calc(var(--gameboard-size) / 3));
@@ -31,6 +33,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    user-select: none;
 }
 .cell[data-index="2"],
 .cell[data-index="5"],
@@ -41,4 +44,52 @@
 .cell[data-index="7"],
 .cell[data-index="8"] {
     border-bottom: none;
+}
+
+.modal {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    text-align: center;
+    background-color: var(--bright-blue);
+    padding: 50px 50px 30px 50px;
+    border-radius: 50px;
+    color: white;
+    display: none;
+}
+
+.modal.active {
+    display: block;
+}
+
+.modal h2 {
+    font-size: 48px;
+    font-family: 'Luckiest Guy';
+    margin-bottom: 30px;
+}
+
+.modal p {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.modal .btn {
+    background-color: transparent;
+    color: white;
+    padding: 15px 30px;
+    border: 2px white solid;
+    border-radius: 10px;
+}
+
+.modal .btn:focus {
+    outline: 2px dotted grey;
+}
+
+.modal .btn:hover {
+    transform: scale(0.96);
+    color: rgb(0, 0, 85);
+    border-color: rgb(0, 0, 85);
+    box-shadow: 0 0 5px rgb(0, 0, 85)
 }
