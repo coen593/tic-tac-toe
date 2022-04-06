@@ -11,6 +11,14 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
+    flex-direction: column;
+}
+
+h1 {
+    font-size: 100px;
+    font-family: 'Luckiest Guy', sans-serif;
+    color: var(--bright-blue);
+    margin-bottom: 30px;;
 }
 
 .gameboard {
