@@ -24,7 +24,6 @@ h1 {
 .gameboard {
     width: var(--gameboard-size);
     height: var(--gameboard-size);
-    border: 1px solid lightblue;
     border-radius: 20px;
     display: grid;
     padding: 20px;

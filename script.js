@@ -2,6 +2,7 @@
 const gameBoard = (() => {
     let board = []
     let cell
+    const getBoard = () => board
     const getContainer = () => document.querySelector('.gameboard')
     const createGrid = () => {
         const container = getContainer()
@@ -31,15 +32,16 @@ const gameBoard = (() => {
         let div = document.querySelector(`.cell[data-index="${cell}"]`)
         div.innerText = active
     }
-    return { createGrid, setCell, resetGrid, board }
+    return { createGrid, setCell, resetGrid, getBoard }
 })();
 
+const Player = (symbol, isActive, isComputer) => {
+    return { symbol, isActive, isComputer }
+}
+
 const game = (() => {
-    const Player = (symbol) => {
-        return { symbol }
-    }
-    const x = Player('X')
-    const o = Player('O')
+    const x = Player('X', false, false)
+    const o = Player('O', false, false)
     let active = x
     let gameOver = false
 
@@ -51,7 +53,7 @@ const game = (() => {
     }
 
     const checkWin = () => {
-        const board = gameBoard.board
+        const board = gameBoard.getBoard()
         const winConditions = [
             [0,1,2],
             [3,4,5],
@@ -72,7 +74,7 @@ const game = (() => {
         return false
     }
 
-    const checkTie = () => gameBoard.board.length === 9 && !gameBoard.board.includes(undefined)
+    const checkTie = () => gameBoard.getBoard().length === 9 && !gameBoard.getBoard().includes(undefined)
 
     const isGameOver = (winner) => {
         const modal = document.querySelector('.winner')
@@ -95,5 +97,5 @@ const game = (() => {
     return { playMove, checkWin }
 })()
 
-gameBoard.createGrid()
+
 
