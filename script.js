@@ -107,8 +107,7 @@ const game = (() => {
     const getMiniMaxMove = (board, depth, maximizing) => {
         const options = getOptions(board)
         if (checkTie(board)) {
-            depth++
-            return { move: options[0], val: 0 }
+            return { move: options[0], val: 0}
         } 
         if (maximizing) {
             let highest = -100
@@ -117,7 +116,7 @@ const game = (() => {
                 const currBoard = [...board]
                 currBoard[options[i]] = getActivePlayer().getSymbol()
                 if (checkWin(currBoard)) {
-                    highest = 10   
+                    highest = 10 - depth
                     move = options[i]
                 } else {
                     let value = getMiniMaxMove(currBoard, depth + 1, false).val
@@ -135,7 +134,7 @@ const game = (() => {
                 const currBoard = [...board]
                 currBoard[options[i]] = getNonactivePlayer().getSymbol()
                 if (checkWin(currBoard)) {
-                    lowest = -10    
+                    lowest = depth - 10
                     move = options[i]
                 } else {
                     let value = getMiniMaxMove(currBoard, depth + 1, true).val
