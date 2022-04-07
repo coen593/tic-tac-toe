@@ -1,9 +1,11 @@
 // Module function to define gameBoard
 const gameBoard = (() => {
-    let board = []
+    let board = [,,,,,,,,,]
     const getBoard = () => board
 
-    const resetBoard = () => board.length = 0
+    const resetBoard = () => {
+        board = [,,,,,,,,,]
+    }
 
     const setCell = (active, cell) => board[cell] = active
 
@@ -34,11 +36,11 @@ const game = (() => {
         gameBoard.setCell(active.getSymbol(), cell)
         displayController.setGridCell(active.getSymbol(), cell)
         active === x ? setActivePlayer(o) : setActivePlayer(x)
-        if (checkWin()) {
+        if (checkWin(gameBoard.getBoard())) {
             isGameOver(active.getSymbol())
             return
         } 
-        if (checkTie()) {
+        if (checkTie(gameBoard.getBoard())) {
             isGameOver()
             return
         }
@@ -46,6 +48,8 @@ const game = (() => {
     }
 
     const getActivePlayer = () => x.getActive() ? x : o
+
+    const getNonactivePlayer = () => x.getActive() ? o : x
 
     const setActivePlayer = (active) => {
         if (active == x) {
@@ -57,8 +61,7 @@ const game = (() => {
         }
     }
 
-    const checkWin = () => {
-        const board = gameBoard.getBoard()
+    const checkWin = (board) => {
         const winConditions = [
             [0,1,2],
             [3,4,5],
@@ -79,7 +82,7 @@ const game = (() => {
         return false
     }
 
-    const checkTie = () => gameBoard.getBoard().length === 9 && !gameBoard.getBoard().includes(undefined)
+    const checkTie = (board) => !board.includes(undefined)
 
     const isGameOver = (winner) => {
         displayController.toggleWonModal(winner)
@@ -96,13 +99,69 @@ const game = (() => {
         displayController.togglePlayerSymbol()
     }
 
-    const doComputerMove = () => {
-        let options = gameBoard.getBoard()
-        let cell = ''
-        while (cell === '' || options[cell] === 'X' || options[cell] === 'O') {
-            cell = Math.floor(Math.random() * 9)
+    const getRandomMove = (board) => {
+        const options = getOptions(board)
+        return options[Math.floor(Math.random() * options.length)]
+    }
+
+    const getMiniMaxMove = (board, depth, maximizing) => {
+        const options = getOptions(board)
+        if (checkTie(board)) {
+            depth++
+            return { move: options[0], val: 0 }
+        } 
+        if (maximizing) {
+            let highest = -100
+            let move = -1
+            for (let i = 0; i < options.length; i++) {
+                const currBoard = [...board]
+                currBoard[options[i]] = getActivePlayer().getSymbol()
+                if (checkWin(currBoard)) {
+                    highest = 10   
+                    move = options[i]
+                } else {
+                    let value = getMiniMaxMove(currBoard, depth + 1, false).val
+                    if (value > highest) {
+                        highest = value
+                        move = options[i]
+                    }
+                }
+            }
+            return { move, val: highest }
+        } else {
+            let lowest = +100
+            let move = -1
+            for (let i = 0; i < options.length; i++) {
+                const currBoard = [...board]
+                currBoard[options[i]] = getNonactivePlayer().getSymbol()
+                if (checkWin(currBoard)) {
+                    lowest = -10    
+                    move = options[i]
+                } else {
+                    let value = getMiniMaxMove(currBoard, depth + 1, true).val
+                    if (value < lowest) {
+                        lowest = value
+                        move = options[i]
+                    }
+                }
+            }
+            return { move, val: lowest }
+        } 
+    }
+
+    const getOptions = (board) => {
+        let optionArray = []
+        for (let i = 0; i < board.length; i++) {
+            if (board[i] === undefined) optionArray.push(i)
         }
-        game.playMove(cell)
+        return optionArray
+    }
+
+    const doComputerMove = () => {
+        const board = gameBoard.getBoard()
+        let cell = getMiniMaxMove(board, 0, true).move
+        playMove(cell)
+        // game.playMove(getRandomMove(board))
     }
 
     const initGame = (mode, symbol) => {
@@ -132,7 +191,8 @@ const game = (() => {
         initGame, 
         playAgain, 
         getActivePlayer,
-        getPlayerSymbol
+        getPlayerSymbol,
+        getOptions
     }
 })()
 
@@ -175,7 +235,7 @@ const displayController = (() => {
             div.classList.add('cell')
             container.appendChild(div)
             div.addEventListener('click', function() {
-                if (this.innerText || game.checkWin()) {return}
+                if (this.innerText || game.checkWin(gameBoard.getBoard())) {return}
                 game.playMove(this.dataset.index)
             })
         }
