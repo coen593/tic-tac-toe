@@ -1,10 +1,10 @@
 // Module function to define gameBoard
 const gameBoard = (() => {
-    let board = [,,,,,,,,,]
+    let board = [, , , , , , , , ,]
     const getBoard = () => board
 
     const resetBoard = () => {
-        board = [,,,,,,,,,]
+        board = [, , , , , , , , ,]
     }
 
     const setCell = (active, cell) => board[cell] = active
@@ -18,11 +18,11 @@ const Player = (symbol, isActive, isComputer) => {
     const setActive = (bool) => isActive = bool
     const getComputer = () => isComputer
     const setComputer = (bool) => isComputer = bool
-    return { 
-        getSymbol, 
-        getActive, 
-        setActive, 
-        setComputer, 
+    return {
+        getSymbol,
+        getActive,
+        setActive,
+        setComputer,
         getComputer
     }
 }
@@ -44,7 +44,7 @@ const game = (() => {
         if (checkWin(gameBoard.getBoard())) {
             isGameOver(active.getSymbol())
             return
-        } 
+        }
         if (checkTie(gameBoard.getBoard())) {
             isGameOver()
             return
@@ -66,21 +66,22 @@ const game = (() => {
         }
     }
 
-    const checkWin = (board) => {
+    const checkWin = (board, isMinimax = false) => {
         const winConditions = [
-            [0,1,2],
-            [3,4,5],
-            [6,7,8],
-            [0,3,6],
-            [1,4,7],
-            [2,5,8],
-            [0,4,8],
-            [2,4,6]
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            [0, 4, 8],
+            [2, 4, 6]
         ]
-        for (let c of winConditions) { 
-            if (board[c[0]] === board[c[1]] && 
-            board[c[0]] === board[c[2]] &&
-            board[c[0]]) {
+        for (let c of winConditions) {
+            if (board[c[0]] === board[c[1]] &&
+                board[c[0]] === board[c[2]] &&
+                board[c[0]]) {
+                if (isMinimax == false) displayController.createLine(c)
                 return true
             }
         }
@@ -117,15 +118,15 @@ const game = (() => {
     const getMiniMaxMove = (board, depth, maximizing) => {
         const options = getOptions(board)
         if (checkTie(board)) {
-            return { move: options[0], val: 0}
-        } 
+            return { move: options[0], val: 0 }
+        }
         if (maximizing) {
             let highest = -100
             let move = -1
             for (let i = 0; i < options.length; i++) {
                 const currBoard = [...board]
                 currBoard[options[i]] = getActivePlayer().getSymbol()
-                if (checkWin(currBoard)) {
+                if (checkWin(currBoard, true)) {
                     highest = 10 - depth
                     move = options[i]
                 } else {
@@ -143,7 +144,7 @@ const game = (() => {
             for (let i = 0; i < options.length; i++) {
                 const currBoard = [...board]
                 currBoard[options[i]] = getNonactivePlayer().getSymbol()
-                if (checkWin(currBoard)) {
+                if (checkWin(currBoard, true)) {
                     lowest = depth - 10
                     move = options[i]
                 } else {
@@ -155,7 +156,7 @@ const game = (() => {
                 }
             }
             return { move, val: lowest }
-        } 
+        }
     }
 
     const getOptions = (board) => {
@@ -198,11 +199,11 @@ const game = (() => {
         if (symbol === 'O') doComputerMove()
     }
 
-    return { 
-        playMove, 
-        checkWin, 
-        initGame, 
-        playAgain, 
+    return {
+        playMove,
+        checkWin,
+        initGame,
+        playAgain,
         getActivePlayer,
         getPlayerSymbol,
         getOptions,
@@ -225,7 +226,7 @@ const displayController = (() => {
 
     const togglePlayerSymbol = () => toggleModal(document.querySelector('.choose-symbol'))
 
-    const toggleDifficulty = () =>toggleModal(document.querySelector('.difficulty'))
+    const toggleDifficulty = () => toggleModal(document.querySelector('.difficulty'))
 
     const toggleModal = (modal) => modal.classList.toggle('active')
 
@@ -239,10 +240,10 @@ const displayController = (() => {
         playAgainButton.addEventListener('click', () => game.playAgain())
         personMode.addEventListener('click', () => game.initGame('person'))
         aiMode.addEventListener('click', () => game.getDifficulty())
-        playerX.addEventListener('click', () => game.initGame('ai','X'))
-        playerO.addEventListener('click', () => game.initGame('ai','O'))
+        playerX.addEventListener('click', () => game.initGame('ai', 'X'))
+        playerO.addEventListener('click', () => game.initGame('ai', 'O'))
         diffButtons.forEach(button => {
-            button.addEventListener('click', function() {
+            button.addEventListener('click', function () {
                 game.setDifficulty(this.dataset.difficulty)
                 game.getPlayerSymbol()
             })
@@ -250,16 +251,18 @@ const displayController = (() => {
     })()
 
     const getContainer = () => document.querySelector('.gameboard')
-    
+
     const createGrid = () => {
         const container = getContainer()
+        const canvas = document.createElement('canvas')
+        container.appendChild(canvas)
         for (let i = 0; i < 9; i++) {
             const div = document.createElement('div')
             div.dataset.index = i
             div.classList.add('cell')
             container.appendChild(div)
-            div.addEventListener('click', function() {
-                if (this.innerText || game.checkWin(gameBoard.getBoard())) {return}
+            div.addEventListener('click', function () {
+                if (this.innerText || game.checkWin(gameBoard.getBoard())) { return }
                 game.playMove(this.dataset.index)
             })
         }
@@ -273,21 +276,57 @@ const displayController = (() => {
         }
     }
 
-    const setGridCell = (active, cell) =>{
+    const setGridCell = (active, cell) => {
         let div = document.querySelector(`.cell[data-index="${cell}"]`)
         div.innerText = active
         div.classList.add(active)
     }
 
+    const createLine = (c) => {
+        var cvs = document.querySelector("canvas");
+        var ctx = cvs.getContext("2d");
+        ctx.strokeStyle = "darkblue";
+
+        function drawLine(x1, y1, x2, y2, ratio) {
+            ctx.moveTo(x1, y1);
+            x2 = x1 + ratio * (x2 - x1);
+            y2 = y1 + ratio * (y2 - y1);
+            ctx.lineTo(x2, y2);
+            ctx.stroke();
+        }
+
+        if (c[0] == 0 && c[2] == 2) {x1 = 0  ; y1 = 20 ; x2 = 300; y2 = 20 }
+        if (c[0] == 3 && c[2] == 5) {x1 = 0  ; y1 = 75 ; x2 = 300; y2 = 75 }
+        if (c[0] == 6 && c[2] == 8) {x1 = 0  ; y1 = 130; x2 = 300; y2 = 130}
+        if (c[0] == 0 && c[2] == 6) {x1 = 38 ; y1 = 0  ; x2 = 38 ; y2 = 300}
+        if (c[0] == 1 && c[2] == 7) {x1 = 148; y1 = 0  ; x2 = 148; y2 = 300}
+        if (c[0] == 2 && c[2] == 8) {x1 = 262; y1 = 0  ; x2 = 262; y2 = 300}
+        if (c[0] == 0 && c[2] == 8) {x1 = 0  ; y1 = 0  ; x2 = 600; y2 = 300}
+        if (c[0] == 2 && c[2] == 6) {x1 = 0  ; y1 = 150; x2 = 300; y2 = 0  }
+
+        function animate(ratio) {
+            ratio = ratio || 0;
+            drawLine(x1, y1, x2, y2, ratio);
+            if (ratio < 1) {
+                requestAnimationFrame(function () {
+                    animate(ratio + 0.02);
+                });
+            }
+        }
+
+        animate();
+    }
+
     return {
-        toggleWonModal, 
-        createGrid, 
-        resetGrid, 
-        setGridCell, 
-        togglePlayAgain, 
+        toggleWonModal,
+        createGrid,
+        resetGrid,
+        setGridCell,
+        togglePlayAgain,
         toggleModeScreen,
         togglePlayerSymbol,
-        toggleDifficulty
+        toggleDifficulty,
+        createLine
     }
 })()
 

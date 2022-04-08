@@ -26,6 +26,7 @@ h1 {
 .gameboard {
     width: var(--gameboard-size);
     height: var(--gameboard-size);
+    position: relative;
     border-radius: 20px;
     display: grid;
     padding: 20px;
@@ -151,4 +152,14 @@ h1 {
 .btn div {
     font-size: 18px;
     font-weight: 700;
+}
+
+canvas {
+    position: absolute;
+    height: calc(var(--gameboard-size)*0.9);
+    width: calc(var(--gameboard-size)*0.9);
+    z-index: -1;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%)
 }
