@@ -12,6 +12,7 @@ const gameBoard = (() => {
     return { setCell, getBoard, resetBoard }
 })();
 
+// Factory function to create new players
 const Player = (symbol, isActive, isComputer) => {
     const getSymbol = () => symbol
     const getActive = () => isActive
@@ -27,6 +28,7 @@ const Player = (symbol, isActive, isComputer) => {
     }
 }
 
+// Game function, module function defining the whole game
 const game = (() => {
     const x = Player('X', false, false)
     const o = Player('O', false, false)
@@ -36,6 +38,10 @@ const game = (() => {
         difficulty = num
     }
 
+    // Sets the selected cell to the active player's symbol in the gameboard and on the display
+    // Switches the active player
+    // Checks if game is won or tied
+    // If the new active player is a computer, it's asked to do a move
     const playMove = (cell) => {
         let active = getActivePlayer()
         gameBoard.setCell(active.getSymbol(), cell)
@@ -66,6 +72,8 @@ const game = (() => {
         }
     }
 
+    // Returns a boolean to see if a game is won
+    // If not called by the minimax function, it also triggers the win animation on the display
     const checkWin = (board, isMinimax = false) => {
         const winConditions = [
             [0, 1, 2],
@@ -90,14 +98,15 @@ const game = (() => {
         return false
     }
 
+    // Checks if the game is tied
     const checkTie = (board) => !board.includes(undefined)
 
+    // Below functions all toggle a modal on and off and basically walk through the menu structure as such
     const isGameOver = (winner) => {
         setTimeout(() => displayController.toggleWonModal(winner), 1000)
     }
 
     const playAgain = () => {
-        setActivePlayer(x)
         displayController.togglePlayAgain()
         displayController.toggleModeScreen()
     }
@@ -112,11 +121,13 @@ const game = (() => {
         displayController.toggleDifficulty()
     }
 
+    // Random move generator
     const getRandomMove = (board) => {
         const options = getOptions(board)
         return options[Math.floor(Math.random() * options.length)]
     }
 
+    // Optimal move generator through minmax function
     const getMiniMaxMove = (board, depth, maximizing) => {
         const options = getOptions(board)
         if (checkTie(board)) {
@@ -161,6 +172,7 @@ const game = (() => {
         }
     }
 
+    // Checks board input and returns all empty cells
     const getOptions = (board) => {
         let optionArray = []
         for (let i = 0; i < board.length; i++) {
@@ -169,6 +181,7 @@ const game = (() => {
         return optionArray
     }
 
+    // Based on difficulty more or less likely to produce a random or minimax move
     const doComputerMove = () => {
         const board = gameBoard.getBoard()
         let cell
@@ -180,6 +193,7 @@ const game = (() => {
         playMove(cell)
     }
 
+    // Resets the game
     const initGame = (mode, symbol) => {
         if (mode === 'person') {
             displayController.toggleModeScreen()
@@ -214,7 +228,9 @@ const game = (() => {
     }
 })()
 
+// Display controller controls everything the user sees and can interact with
 const displayController = (() => {
+    // Below are all toggles for modals on the screen
     const toggleWonModal = (winner) => {
         const modal = document.querySelector('.winner')
         const wonText = document.querySelector('.won-header')
@@ -232,6 +248,7 @@ const displayController = (() => {
 
     const toggleModal = (modal) => modal.classList.toggle('active')
 
+    // All initial event listeners (minus grid cells)
     const initEventListeners = (() => {
         const personMode = document.querySelector('#vs-person')
         const aiMode = document.querySelector('#vs-ai')
@@ -252,8 +269,10 @@ const displayController = (() => {
         })
     })()
 
+    // Simple function to quickly grab the gameboard (often used)
     const getContainer = () => document.querySelector('.gameboard')
 
+    // Creates a grid: creates the canvas for drawing lines and nine empty cells
     const createGrid = () => {
         const container = getContainer()
         const canvas = document.createElement('canvas')
@@ -270,6 +289,7 @@ const displayController = (() => {
         }
     }
 
+    // Removes the grid on the gameboard
     const resetGrid = () => {
         const divs = getContainer().childNodes
         for (let i = 0; i < divs.length; i++) {
@@ -278,12 +298,15 @@ const displayController = (() => {
         }
     }
 
+    // Fill in value in a cell
     const setGridCell = (active, cell) => {
         let div = document.querySelector(`.cell[data-index="${cell}"]`)
         div.innerText = active
         div.classList.add(active)
     }
 
+    // Animation to create a line through the winning cells
+    // Also triggers a font size increase in the winning cells
     const winAnimate = (c) => {
         var cvs = document.querySelector("canvas");
         var ctx = cvs.getContext("2d");
@@ -297,6 +320,7 @@ const displayController = (() => {
             ctx.stroke();
         }
 
+        // Coordinates for the line based on winning cells
         if (c[0] == 0 && c[2] == 2) {x1 = 0  ; y1 = 20 ; x2 = 300; y2 = 20 }
         if (c[0] == 3 && c[2] == 5) {x1 = 0  ; y1 = 75 ; x2 = 300; y2 = 75 }
         if (c[0] == 6 && c[2] == 8) {x1 = 0  ; y1 = 130; x2 = 300; y2 = 130}
@@ -317,6 +341,7 @@ const displayController = (() => {
         }
         animate();
 
+        // Class won increases the font size in the cells
         getContainer().childNodes.forEach(cell => {
             if (c.includes(parseInt(cell.dataset.index))) {
                 cell.classList.add('won')

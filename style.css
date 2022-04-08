@@ -16,6 +16,7 @@
     flex-direction: column;
 }
 
+/* Header on top */
 h1 {
     font-size: clamp(60px, 17vw, 120px);
     font-family: 'Luckiest Guy', sans-serif;
@@ -23,6 +24,7 @@ h1 {
     margin-bottom: 30px;;
 }
 
+/* Gameboard and cells */
 .gameboard {
     width: var(--gameboard-size);
     height: var(--gameboard-size);
@@ -66,6 +68,7 @@ h1 {
     font-size: 150px;
 }
 
+/* Modals */
 .modal {
     position: absolute;
     top: 50%;
@@ -110,6 +113,7 @@ h1 {
     justify-self: center;  
 }
 
+/* Buttons */
 .btn {
     background-color: transparent;
     color: white;
@@ -158,6 +162,7 @@ h1 {
     font-weight: 700;
 }
 
+/* Canvas setup */
 canvas {
     position: absolute;
     height: calc(var(--gameboard-size)*0.9);
