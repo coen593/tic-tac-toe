@@ -30,6 +30,11 @@ const Player = (symbol, isActive, isComputer) => {
 const game = (() => {
     const x = Player('X', false, false)
     const o = Player('O', false, false)
+    let difficulty = 1
+
+    const setDifficulty = (num) => {
+        difficulty = num
+    }
 
     const playMove = (cell) => {
         let active = getActivePlayer()
@@ -95,8 +100,13 @@ const game = (() => {
     }
 
     const getPlayerSymbol = () => {
-        displayController.toggleModeScreen()
+        displayController.toggleDifficulty()
         displayController.togglePlayerSymbol()
+    }
+
+    const getDifficulty = () => {
+        displayController.toggleModeScreen()
+        displayController.toggleDifficulty()
     }
 
     const getRandomMove = (board) => {
@@ -158,9 +168,14 @@ const game = (() => {
 
     const doComputerMove = () => {
         const board = gameBoard.getBoard()
-        let cell = getMiniMaxMove(board, 0, true).move
+        let cell
+        if (Math.random() > difficulty / 3) {
+            console.log('cke')
+            cell = getRandomMove(board)
+        } else {
+            cell = getMiniMaxMove(board, 0, true).move
+        }
         playMove(cell)
-        // game.playMove(getRandomMove(board))
     }
 
     const initGame = (mode, symbol) => {
@@ -191,7 +206,9 @@ const game = (() => {
         playAgain, 
         getActivePlayer,
         getPlayerSymbol,
-        getOptions
+        getOptions,
+        setDifficulty,
+        getDifficulty
     }
 })()
 
@@ -209,6 +226,8 @@ const displayController = (() => {
 
     const togglePlayerSymbol = () => toggleModal(document.querySelector('.choose-symbol'))
 
+    const toggleDifficulty = () =>toggleModal(document.querySelector('.difficulty'))
+
     const toggleModal = (modal) => modal.classList.toggle('active')
 
     const initEventListeners = (() => {
@@ -217,11 +236,18 @@ const displayController = (() => {
         const playAgainButton = document.querySelector('#play-again')
         const playerX = document.querySelector('#player-x')
         const playerO = document.querySelector('#player-o')
+        const diffButtons = document.querySelectorAll('.difficulty-button')
         playAgainButton.addEventListener('click', () => game.playAgain())
         personMode.addEventListener('click', () => game.initGame('person'))
-        aiMode.addEventListener('click', () => game.getPlayerSymbol())
+        aiMode.addEventListener('click', () => game.getDifficulty())
         playerX.addEventListener('click', () => game.initGame('ai','X'))
         playerO.addEventListener('click', () => game.initGame('ai','O'))
+        diffButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                game.setDifficulty(this.dataset.difficulty)
+                game.getPlayerSymbol()
+            })
+        })
     })()
 
     const getContainer = () => document.querySelector('.gameboard')
@@ -260,7 +286,8 @@ const displayController = (() => {
         setGridCell, 
         togglePlayAgain, 
         toggleModeScreen,
-        togglePlayerSymbol
+        togglePlayerSymbol,
+        toggleDifficulty
     }
 })()
 
