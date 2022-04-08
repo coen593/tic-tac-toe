@@ -170,7 +170,6 @@ const game = (() => {
         const board = gameBoard.getBoard()
         let cell
         if (Math.random() > difficulty / 3) {
-            console.log('cke')
             cell = getRandomMove(board)
         } else {
             cell = getMiniMaxMove(board, 0, true).move
@@ -277,6 +276,7 @@ const displayController = (() => {
     const setGridCell = (active, cell) =>{
         let div = document.querySelector(`.cell[data-index="${cell}"]`)
         div.innerText = active
+        div.classList.add(active)
     }
 
     return {

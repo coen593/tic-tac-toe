@@ -1,8 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Luckiest+Guy&family=Montserrat&family=Poiret+One&display=swap');
 
 :root {
-    --gameboard-size: 500px;
+    --gameboard-size: clamp(350px, 95vw, 600px);
     --bright-blue: rgb(0, 195, 255);
+    --color-x: rgb(0, 185, 56);
+    --color-o: rgb(194, 0, 201);
     font-family: 'Poiret One', sans-serif;
 }
 
@@ -15,7 +17,7 @@
 }
 
 h1 {
-    font-size: 100px;
+    font-size: clamp(60px, 17vw, 120px);
     font-family: 'Luckiest Guy', sans-serif;
     color: var(--bright-blue);
     margin-bottom: 30px;;
@@ -52,22 +54,36 @@ h1 {
 .cell[data-index="8"] {
     border-bottom: none;
 }
+.cell.X {
+    color: var(--color-x)
+}
+.cell.O {
+    color: var(--color-o)
+}
 
 .modal {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%,-50%);
+    width: 330px;
     text-align: center;
     background-color: var(--bright-blue);
     padding: 50px 50px 30px 50px;
     border-radius: 50px;
     color: white;
-    display: none;
+    opacity: 0;
+    z-index: -1;
+    transition: 300ms;
+    display: grid;
+    grid-template-columns: auto auto;
+    justify-content: center;
+    gap: 20px;
 }
 
 .modal.active {
-    display: block;
+    opacity: 0.9;
+    z-index: 1;
 }
 
 .modal h2 {
@@ -82,21 +98,57 @@ h1 {
     margin-bottom: 20px;
 }
 
-.modal .btn {
-    background-color: transparent;
-    color: white;
-    padding: 15px 30px;
-    border: 2px white solid;
-    border-radius: 10px;
+.modal p,
+.modal h2,
+#play-again {
+    grid-column: 1 / 3;
+    justify-self: center;  
 }
 
-.modal .btn:focus {
+.btn {
+    background-color: transparent;
+    color: white;
+    border: 2px white solid;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 120px;
+    height: 110px;
+    justify-self: center;
+}
+
+.btn.symbol-button div {
+    font-size: 60px;
+}
+
+.btn#play-again div {
+    font-size: 30px;
+}
+
+.btn:focus {
     outline: 2px dotted grey;
 }
 
-.modal .btn:hover {
+.btn:hover {
     transform: scale(0.96);
     color: rgb(0, 0, 85);
     border-color: rgb(0, 0, 85);
     box-shadow: 0 0 5px rgb(0, 0, 85)
+}
+
+.btn img.normal,
+.btn:hover img.hover {
+    display: block;
+}
+
+.btn img.hover,
+.btn:hover img.normal {
+    display: none;
+}
+
+.btn div {
+    font-size: 18px;
+    font-weight: 700;
 }
