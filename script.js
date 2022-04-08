@@ -81,7 +81,9 @@ const game = (() => {
             if (board[c[0]] === board[c[1]] &&
                 board[c[0]] === board[c[2]] &&
                 board[c[0]]) {
-                if (isMinimax == false) displayController.createLine(c)
+                if (isMinimax == false) {
+                    displayController.winAnimate(c)
+                }
                 return true
             }
         }
@@ -91,7 +93,7 @@ const game = (() => {
     const checkTie = (board) => !board.includes(undefined)
 
     const isGameOver = (winner) => {
-        displayController.toggleWonModal(winner)
+        setTimeout(() => displayController.toggleWonModal(winner), 1000)
     }
 
     const playAgain = () => {
@@ -215,7 +217,7 @@ const game = (() => {
 const displayController = (() => {
     const toggleWonModal = (winner) => {
         const modal = document.querySelector('.winner')
-        const wonText = document.querySelector('.won')
+        const wonText = document.querySelector('.won-header')
         toggleModal(modal)
         winner ? wonText.innerText = `${winner} won!` : wonText.innerText = "It's a tie!"
     }
@@ -282,7 +284,7 @@ const displayController = (() => {
         div.classList.add(active)
     }
 
-    const createLine = (c) => {
+    const winAnimate = (c) => {
         var cvs = document.querySelector("canvas");
         var ctx = cvs.getContext("2d");
         ctx.strokeStyle = "darkblue";
@@ -313,8 +315,13 @@ const displayController = (() => {
                 });
             }
         }
-
         animate();
+
+        getContainer().childNodes.forEach(cell => {
+            if (c.includes(parseInt(cell.dataset.index))) {
+                cell.classList.add('won')
+            }
+        })
     }
 
     return {
@@ -326,7 +333,7 @@ const displayController = (() => {
         toggleModeScreen,
         togglePlayerSymbol,
         toggleDifficulty,
-        createLine
+        winAnimate
     }
 })()
 
